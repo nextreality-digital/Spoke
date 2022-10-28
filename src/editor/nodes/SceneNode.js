@@ -12,38 +12,6 @@ import MigrateScene from "./SceneMigration";
 
 const mediaComponents = ["gltf-model", "video", "image", "spawner", "audio"];
 
-function migrateIEEEVR(json) {
-  for (const entityId in json.entities) {
-    if (!Object.prototype.hasOwnProperty.call(json.entities, entityId)) continue;
-
-    const entity = json.entities[entityId];
-
-    if (!entity.components) {
-      continue;
-    }
-
-    for (const component of entity.components) {
-      if (mediaComponents.indexOf(component.name) !== -1) {
-        let src = component.props.src;
-
-        src = src.replace(
-          "hubs-ieeevr-hubs-internal-net-proxy.ieeevr2020.workers.dev",
-          "ieeevr-assets.ieeevr-hubs-internal.net"
-        );
-
-        src = src.replace(
-          "hubs-ieeevr-hubs-internal-net-cors-proxy.ieeevr2020.workers.dev",
-          "ieeevr-assets.ieeevr-hubs-internal.net"
-        );
-
-        component.props.src = src;
-      }
-    }
-  }
-
-  return json;
-}
-
 export const FogType = {
   Disabled: "disabled",
   Linear: "linear",
@@ -63,8 +31,6 @@ export default class SceneNode extends EditorNodeMixin(Scene) {
 
   static async loadProject(editor, json) {
     json = MigrateScene(json, JSON_VERSION);
-
-    json = migrateIEEEVR(json);
 
     const { root, metadata, entities } = json;
 
